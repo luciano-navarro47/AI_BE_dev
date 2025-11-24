@@ -4,7 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "start:offline": "serverless offline start",
+    "deploy": "serverless deploy",
+    "remove": "serverless remove",
+    "lint": "eslint . --ext .ts,.js",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
