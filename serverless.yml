@@ -2,19 +2,28 @@ service: ai-be-dev
 
 frameworkVersion: '4'
 
-plugins:
-  - serverless-offline
-  - serverless-dotenv-plugin
-
 provider:
   name: aws
   runtime: nodejs20.x
   region: us-east-1
   stage: dev
   environment:
-    NODE_ENV: dev
-    JWT_SECRET: ${env:JWT_SECRET}
     AWS_BEARER_TOKEN_BEDROCK: ${env:AWS_BEARER_TOKEN_BEDROCK}
+    DYNAMO_TABLE_USERS: ${self:provider.stage}-users
+    JWT_SECRET: ${env:JWT_SECRET}
+    NODE_ENV: dev
+    USE_MOCK_USERS: ${env:USE_MOCK_USERS}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+          Resource:
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMO_TABLE_USERS}
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMO_TABLE_USERS}/index/*
 
 functions:
   api:
@@ -35,3 +44,25 @@ custom:
     httpPort: 3000
     reloadHandler: true
 
+resources:
+  Resources:
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.stage}-users
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: email-index
+            KeySchema:
+              - AttributeName: email
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL

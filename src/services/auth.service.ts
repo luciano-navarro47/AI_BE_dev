@@ -19,7 +19,7 @@ export const loginService = async (email: string, password: string): Promise<Ser
             return { ok: false, status: 401, error: "Invalid credentials" };
         }
 
-        const match = await bcrypt.compare(password, user.passwordHash || user.password || "");
+        const match = await bcrypt.compare(password, user.passwordHash || user.roleId || "");
         if (!match) {
             return { ok: false, status: 401, error: "Invalid credentials" };
         }

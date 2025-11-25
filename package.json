@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start:offline": "npm run build && serverless offline",
     "deploy": "serverless deploy",
-    "remove": "serverless remove",
+    "dev": "nodemon --watch src --exec ts-node src/local-server.ts",
     "lint": "eslint . --ext .ts,.js",
+    "remove": "serverless remove",
     "test": "jest"
   },
   "keywords": [],
@@ -22,10 +22,12 @@
     "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.10.1",
+    "@types/supertest": "^6.0.3",
     "eslint": "^9.39.1",
     "jest": "^30.2.0",
+    "nodemon": "^3.1.11",
     "prettier": "^3.6.2",
-    "serverless": "^4.25.0",
+    "supertest": "^7.1.4",
     "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
