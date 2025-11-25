@@ -58,3 +58,29 @@ export const getMyPostDetailService = async (userId: string, postId: string) => 
         return { ok: false, status: 500, error: "Internal server error during API call" }
     }
 }
+
+export const getMyPostCommentsService = async (userId: string, postId: string) => {
+    try {
+        const postVerificationUrl = `https://jsonplaceholder.typicode.com/posts/${postId}`;
+        const postRespone = await axios.get(postVerificationUrl);
+        const post = postRespone.data;
+
+        if (post.userId !== Number(userId)) {
+            return {
+                ok: false,
+                status: 403,
+                error: "Forbidden: You do not have permission to view comments for this post"
+            };
+        }
+
+        const COMMENTS_API_URL = `https://jsonplaceholder.typicode.com/posts/${postId}/comments`;
+
+        const commentsResponse = await axios.get(COMMENTS_API_URL);
+        const comments = commentsResponse.data;
+
+        return { ok: true, status: 200, data: comments };
+    } catch (error) {
+        console.error("getMyPostCommentsService error:", error);
+        return { ok: false, status: 500, error: "Internal server error during API call" }
+    }
+}

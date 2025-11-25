@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getMyInfoService, getMyPostDetailService, getMyPostsService } from "../services/me.service";
+import { getMyInfoService, getMyPostCommentsService, getMyPostDetailService, getMyPostsService } from "../services/me.service";
 
 export const meController = async (req: Request, res: Response) => {
     try {
@@ -56,6 +56,28 @@ export const mePostDetailController = async (req: Request, res: Response) => {
         return res.status(200).json(result.data);
     } catch (error) {
         console.error("mePostDetailController error:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+export const mePostCommentsController = async (req: Request, res: Response) => {
+    try {
+        const user = (req as any).user;
+        const postId = req.params.postId;
+
+        if (!postId) {
+            return res.status(401).json({ message: "Post ID is required" });
+        }
+
+        const result = await getMyPostCommentsService(user.userId, postId);
+
+        if (!result.ok) {
+            return res.status(result.status).json({ message: result.error });
+        }
+
+        return res.status(200).json(result.data);
+    } catch (error) {
+        console.error("mePostCommentsController error:", error);
         return res.status(500).json({ message: "Internal server error" });
     }
 }
