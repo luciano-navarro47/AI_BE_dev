@@ -1,0 +1,73 @@
+# AI_BE_dev
+
+Backend para **Reto AI**. API REST en TypeScript con Express.  
+Incluye endpoints de autenticación, tests con Jest + Supertest y despliegue con Serverless.
+
+---
+
+## Table of contents
+- [Requisitos](#requisitos)
+- [Instalación](#instalación)
+- [Comandos útiles](#comandos-útiles)
+- [Estructura del proyecto](#estructura-del-proyecto)
+- [Variables de entorno](#variables-de-entorno)
+- [Testing](#testing)
+- [Mocks en tests / Uso local](#mocks-en-tests--uso-local)
+- [Serverless (breve)](#serverless-breve)
+- [Problemas comunes / Troubleshooting](#problemas-comunes--troubleshooting)
+- [Futuras mejoras / TODO](#futuras-mejoras--todo)
+
+---
+
+## Requisitos
+- Node >= 18 (recomendado)
+- npm (o yarn)
+- (opcional) DynamoDB local si querés probar integración con AWS sin tocar la nube
+- (opcional) `serverless` CLI para deploy: `npm i -g serverless`
+
+---
+
+## Instalación
+
+```bash
+# clonar repo
+git clone <repo-url>
+cd AI_BE_dev
+
+# instalar dependencias
+npm install
+```
+
+## Comandos útiles
+
+### Desarrollo (levanta watcher para TS)
+```bash
+npm run dev
+```
+
+### Compilar TypeScript
+```bash
+npm run build
+```
+
+### Ejecutar tests (Jest + ts-jest)
+```bash
+npx jest
+# o
+npm test
+```
+
+### Lint
+```bash
+npm run lint
+```
+
+### Deploy con Serverless (según serverless.yml)
+```bash
+npm run deploy
+```
+
+### Remover deployment
+```bash
+npm run remove
+
