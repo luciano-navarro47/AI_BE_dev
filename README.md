@@ -45,7 +45,7 @@ npm install
 npm run dev
 ```
 
-### Compilar TypeScript
+### Compilar TypeScript (!! antes de deploy !!)
 ```bash
 npm run build
 ```
