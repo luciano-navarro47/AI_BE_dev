@@ -88,7 +88,7 @@ docker stop <container_id>
 ### Crear tabla users 
 ```bash
 aws dynamodb create-table \
-    --table-name users \
+    --table-name dev-users \
     --attribute-definitions AttributeName=id,AttributeType=S AttributeName=email,AttributeType=S \
     --key-schema AttributeName=id,KeyType=HASH \
     --global-secondary-indexes "IndexName=email-index,KeySchema=[{AttributeName=email,KeyType=HASH}],Projection={ProjectionType=ALL}" \
@@ -99,12 +99,12 @@ aws dynamodb create-table \
 ### Insertar un usuario de prueba
 ```bash
 aws dynamodb put-item \
-    --table-name users \
+    --table-name dev-users \
     --item '{
         "id": {"S": "1"},
         "email": {"S": "test@example.com"},
-        "passwordHash": {"S": "$2b$10$EbaSEH5ZezKGLwMelVKdIOsc1jlKTp5YScspJ4q5m/aBAmY3AZ23W"},
-        "roleId": {"S": "1"}
+        "passwordHash": {"S": "$2b$10$GqzEG114O6tGw3zP8Pl1Tu41j2lfWVxHzLbNQMfYu8xi.Gv0D5wTq"},
+        "roleId": {"S": "2"}
     }' \
     --endpoint-url http://localhost:8000
 ```
@@ -112,20 +112,45 @@ aws dynamodb put-item \
 ### Crear tabla roles
 ```bash
 aws dynamodb create-table \
-    --table-name roles \
+    --table-name dev-roles \
     --attribute-definitions AttributeName=id,AttributeType=S \
     --key-schema AttributeName=id,KeyType=HASH \
     --billing-mode PAY_PER_REQUEST \
     --endpoint-url http://localhost:8000
 ```
 
-### Insertar un rol de prueba
+### Insertar un rol de prueba (admin)
 ```bash
 aws dynamodb put-item \
-    --table-name roles \
+    --table-name dev-roles \
     --item '{
         "id": {"S": "1"},
         "name": {"S": "admin"}
     }' \
+    --endpoint-url http://localhost:8000
+```
+
+### Insertar un rol de prueba (personal)
+```bash
+aws dynamodb put-item \
+    --table-name dev-roles \
+    --item '{
+        "id": {"S": "2"},
+        "name": {"S": "personal"}
+    }' \
+    --endpoint-url http://localhost:8000
+```
+
+### Borrar tabla users
+```bash
+aws dynamodb delete-table \
+    --table-name dev-users \
+    --endpoint-url http://localhost:8000
+```
+
+### Borrar tabla roles
+```bash
+aws dynamodb delete-table \
+    --table-name dev-roles \
     --endpoint-url http://localhost:8000
 ```
