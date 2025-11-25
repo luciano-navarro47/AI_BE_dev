@@ -23,6 +23,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.10.1",
     "@types/supertest": "^6.0.3",
+    "@types/uuid": "^10.0.0",
     "eslint": "^9.39.1",
     "jest": "^30.2.0",
     "nodemon": "^3.1.11",
@@ -41,6 +42,7 @@
     "dynamoose": "^4.0.4",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "serverless-http": "^4.0.0"
+    "serverless-http": "^4.0.0",
+    "uuid": "^8.3.2"
   }
 }
