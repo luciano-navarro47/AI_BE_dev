@@ -1,0 +1,37 @@
+service: ai-be-dev
+
+frameworkVersion: '4'
+
+plugins:
+  - serverless-offline
+  - serverless-dotenv-plugin
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  stage: dev
+  environment:
+    NODE_ENV: dev
+    JWT_SECRET: ${env:JWT_SECRET}
+    AWS_BEARER_TOKEN_BEDROCK: ${env:AWS_BEARER_TOKEN_BEDROCK}
+
+functions:
+  api:
+    handler: dist/handler.handler
+    events:
+      - httpApi:
+          path: /{proxy+}
+          method: ANY
+
+package:
+  individually: false
+  patterns:
+    - '!node_modules/.bin/**'
+    - 'dist/**'
+
+custom:
+  serverless-offline:
+    httpPort: 3000
+    reloadHandler: true
+
