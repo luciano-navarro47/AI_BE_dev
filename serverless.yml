@@ -13,7 +13,6 @@ provider:
     DYNAMO_TABLE_ROLES: ${self:provider.stage}-roles
     JWT_SECRET: ${env:JWT_SECRET}
     NODE_ENV: dev
-    USE_MOCK_USERS: ${env:USE_MOCK_USERS}
   iam:
     role:
       statements:
