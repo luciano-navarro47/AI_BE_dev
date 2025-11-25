@@ -5,7 +5,7 @@ Incluye endpoints de autenticación, tests con Jest + Supertest y despliegue con
 
 ---
 
-## Table of contents
+## Tabla de contenidos
 - [Requisitos](#requisitos)
 - [Instalación](#instalación)
 - [Comandos útiles](#comandos-útiles)
@@ -45,7 +45,7 @@ npm install
 npm run dev
 ```
 
-### Compilar TypeScript
+### Compilar TypeScript (!! antes de deploy !!)
 ```bash
 npm run build
 ```
@@ -55,12 +55,7 @@ npm run build
 npx jest
 # o
 npm test
-```
-
-### Lint
-```bash
-npm run lint
-```
+``` 
 
 ### Deploy con Serverless (según serverless.yml)
 ```bash
@@ -70,4 +65,67 @@ npx serverless deploy --stage dev
 ### Remover deployment
 ```bash
 npx serverless remove --stage dev
+```
 
+### Ejecutar DynamoDB local
+```bash
+# Modo detached (segundo plano) - recomendado
+docker run -d -p 8000:8000 amazon/dynamodb-local
+```
+
+```bash
+# Ver contenedores corriendo
+docker ps
+```
+
+```bash
+# Detener el contenedor
+docker stop <container_id>
+```
+
+## DynamoDB con entorno local
+
+### Crear tabla users 
+```bash
+aws dynamodb create-table \
+    --table-name users \
+    --attribute-definitions AttributeName=id,AttributeType=S AttributeName=email,AttributeType=S \
+    --key-schema AttributeName=id,KeyType=HASH \
+    --global-secondary-indexes "IndexName=email-index,KeySchema=[{AttributeName=email,KeyType=HASH}],Projection={ProjectionType=ALL}" \
+    --billing-mode PAY_PER_REQUEST \
+    --endpoint-url http://localhost:8000
+```
+
+### Insertar un usuario de prueba
+```bash
+aws dynamodb put-item \
+    --table-name users \
+    --item '{
+        "id": {"S": "1"},
+        "email": {"S": "test@example.com"},
+        "passwordHash": {"S": "$2b$10$EbaSEH5ZezKGLwMelVKdIOsc1jlKTp5YScspJ4q5m/aBAmY3AZ23W"},
+        "roleId": {"S": "1"}
+    }' \
+    --endpoint-url http://localhost:8000
+```
+
+### Crear tabla roles
+```bash
+aws dynamodb create-table \
+    --table-name roles \
+    --attribute-definitions AttributeName=id,AttributeType=S \
+    --key-schema AttributeName=id,KeyType=HASH \
+    --billing-mode PAY_PER_REQUEST \
+    --endpoint-url http://localhost:8000
+```
+
+### Insertar un rol de prueba
+```bash
+aws dynamodb put-item \
+    --table-name roles \
+    --item '{
+        "id": {"S": "1"},
+        "name": {"S": "admin"}
+    }' \
+    --endpoint-url http://localhost:8000
+```
