@@ -36,3 +36,25 @@ export const getMyPostsService = async (userId: string) => {
         return { ok: false, status: 500, error: "Internal server error during API call" };
     }
 };
+
+export const getMyPostDetailService = async (userId: string, postId: string) => {
+
+    try {
+        const POSTS_API_URL = `https://jsonplaceholder.typicode.com/posts/${postId}`;
+        const response = await axios.get(POSTS_API_URL);
+        const post = response.data;
+
+        if (!post || !post.id) {
+            return { ok: false, status: 404, error: `Post not found with this ID: ${postId}` }
+        }
+
+        if (post.userId !== Number(userId)) {
+            return { ok: false, status: 403, error: "You are not authorized to access this post" }
+        }
+
+        return { ok: true, status: 200, data: post }
+    } catch (error) {
+        console.error("getMyPostDetailService error:", error);
+        return { ok: false, status: 500, error: "Internal server error during API call" }
+    }
+}
