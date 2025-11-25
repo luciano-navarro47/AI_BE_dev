@@ -10,8 +10,12 @@ export function authMiddleware(
 ) {
   const auth = req.headers.authorization;
 
-  if (!auth) return res.status(401).json({ error: "No token" });
-  const token = auth.split(" ")[1];
+  if (!auth) return res.status(401).json({ error: "Missing authorization header" });
+
+  const parts = auth.split(" ");
+  const token = parts.length === 2 ? parts[1] : undefined;
+
+  if (!token) return res.status(401).json({ error: "Missing token" });
 
   try {
     const payload = jwt.verify(token, JWT_SECRET);
