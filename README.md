@@ -64,10 +64,10 @@ npm run lint
 
 ### Deploy con Serverless (según serverless.yml)
 ```bash
-npm run deploy
+npx serverless deploy --stage dev
 ```
 
 ### Remover deployment
 ```bash
-npm run remove
+npx serverless remove --stage dev
 
