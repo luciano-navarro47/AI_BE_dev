@@ -22,8 +22,8 @@ provider:
             - dynamodb:GetItem
             - dynamodb:PutItem
           Resource:
-            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMO_USERS_TABLE}
-            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMO_USERS_TABLE}/index/*
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMO_TABLE_USERS}
+            - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMO_TABLE_USERS}/index/*
 
 functions:
   api:
