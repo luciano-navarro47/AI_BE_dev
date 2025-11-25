@@ -1,6 +1,5 @@
-// src/services/auth.service.ts
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import { signJwt } from "../lib/jwt";
 import { getUserByEmail } from "../repositories/users.repository";
 
 const JWT_SECRET = process.env.JWT_SECRET || "changeme";
@@ -26,7 +25,11 @@ export const loginService = async (email: string, password: string): Promise<Ser
         }
 
         const payload = { userId: user.id, roleId: user.roleId, email: user.email };
-        const token = jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+        const token = signJwt(
+            payload,
+            JWT_SECRET,
+            JWT_EXPIRES_IN
+        );
 
         return {
             ok: true,
