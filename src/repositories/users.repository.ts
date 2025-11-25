@@ -1,7 +1,7 @@
 import { ddbDocClient } from "../lib/dynamo.client";
 import { PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 
-const TABLE = process.env.USERS_TABLE!;
+const TABLE = process.env.DYNAMO_USERS_TABLE!;
 
 export async function createUser(item: any) {
     await ddbDocClient.send(new PutCommand({ TableName: TABLE, Item: item }));

@@ -15,7 +15,7 @@ app.post("/login", (req, res) => {
     return res.json({ message: "Login placeholder" });
 })
 
-// app.use("/api/v1", authRouter);
+app.use("/api/v1", authRouter);
 // app.use("/api/v1", meRouter);
 
 export default app;
