@@ -2,10 +2,6 @@ service: ai-be-dev
 
 frameworkVersion: '4'
 
-plugins:
-  - serverless-offline
-  - serverless-dotenv-plugin
-
 provider:
   name: aws
   runtime: nodejs20.x
@@ -15,6 +11,7 @@ provider:
     NODE_ENV: dev
     JWT_SECRET: ${env:JWT_SECRET}
     AWS_BEARER_TOKEN_BEDROCK: ${env:AWS_BEARER_TOKEN_BEDROCK}
+    USE_MOCK_USERS: ${env:USE_MOCK_USERS}
 
 functions:
   api:
