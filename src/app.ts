@@ -7,14 +7,6 @@ import authRouter from "./routes/auth.routes";
 const app = express();
 app.use(express.json());
 
-app.get("/", (req, res) => {
-    return res.json({ message: "API running" });
-})
-
-// app.post("/login", (req, res) => {
-//     return res.json({ message: "Login placeholder" });
-// })
-
 app.use("/api/v1", authRouter);
 // app.use("/api/v1", meRouter);
 

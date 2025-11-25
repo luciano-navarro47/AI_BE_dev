@@ -23,8 +23,7 @@
     "skipLibCheck": true,
   },
   "include": [
-    "src/**/*",
-    "bcrypt.js"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",
