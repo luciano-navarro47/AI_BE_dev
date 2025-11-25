@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start:offline": "serverless offline start",
+    "start:offline": "npm run build && serverless offline",
     "deploy": "serverless deploy",
     "remove": "serverless remove",
     "lint": "eslint . --ext .ts,.js",
@@ -16,6 +16,7 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.159",
     "@types/bcryptjs": "^2.4.6",
     "@types/express": "^5.0.5",
     "@types/jest": "^30.0.0",
@@ -30,6 +31,8 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.939.0",
+    "@aws-sdk/lib-dynamodb": "^3.939.0",
     "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.2.3",
