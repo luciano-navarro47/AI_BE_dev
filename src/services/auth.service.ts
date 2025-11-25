@@ -16,7 +16,6 @@ interface ServiceResult {
 export const loginService = async (email: string, password: string): Promise<ServiceResult> => {
     try {
         const user = await getUserByEmail(email);
-        console.log("USER: ", user)
         if (!user) {
             return { ok: false, status: 401, error: "Invalid credentials" };
         }
