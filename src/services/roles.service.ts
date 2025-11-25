@@ -5,7 +5,7 @@ This is a simple example, in a real app you might want to use a more complex
 caching strategy or even a database for roles.
 */
 
-const rolesMap = new Map<string, string>([
+export const rolesMap = new Map<string, string>([
     ["1", "admin"],
     ["2", "personal"],
 ])
