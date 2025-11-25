@@ -8,7 +8,7 @@ const USE_MOCK_USERS = process.env.USE_MOCK_USERS === "true";
 const mockUser = {
     id: "1",
     email: "test@example.com",
-    passwordHash: "$2a$10$KIX/ruaX0CuxqxY/hdpLXeV7lidhraNangNh4tW7x1YgnPZXoqBYa",
+    passwordHash: "$2b$10$EbaSEH5ZezKGLwMelVKdIOsc1jlKTp5YScspJ4q5m/aBAmY3AZ23W",
     roleId: "1"
 }
 
@@ -22,13 +22,11 @@ export async function createUser(item: any) {
     return item;
 }
 export async function getUserByEmail(email: string) {
+
     if (USE_MOCK_USERS) {
-        console.log("[MOCK]: getUserByEmail called")
         if (email === mockUser.email) {
-            console.log("[MOCK]: getUserByEmail returned mockUser")
             return mockUser;
         }
-        console.log("[MOCK]: getUserByEmail returned null")
         return null;
 
     }
