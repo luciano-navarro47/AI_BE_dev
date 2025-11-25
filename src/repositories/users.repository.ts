@@ -19,7 +19,5 @@ export async function getUserByEmail(email: string) {
         })
     );
 
-    console.log("RES: ", res)
-
     return res.Items?.[0] || null;
 }
