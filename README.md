@@ -5,7 +5,7 @@ Incluye endpoints de autenticación, tests con Jest + Supertest y despliegue con
 
 ---
 
-## Table of contents
+## Tabla de contenidos
 - [Requisitos](#requisitos)
 - [Instalación](#instalación)
 - [Comandos útiles](#comandos-útiles)
@@ -55,12 +55,7 @@ npm run build
 npx jest
 # o
 npm test
-```
-
-### Lint
-```bash
-npm run lint
-```
+``` 
 
 ### Deploy con Serverless (según serverless.yml)
 ```bash
@@ -70,4 +65,9 @@ npx serverless deploy --stage dev
 ### Remover deployment
 ```bash
 npx serverless remove --stage dev
+```
+
+### Ejecutar DynamoDB local
+```bash
+docker run -p 8000:8000 amazon/dynamodb-local
 
