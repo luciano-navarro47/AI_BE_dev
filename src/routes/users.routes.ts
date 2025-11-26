@@ -1,12 +1,15 @@
 import { Router } from "express";
-import { authMiddleware } from "../middleware/auth.middleware";
-import { roleMiddleware } from "../middleware/role.middleware";
+import { authMiddleware } from "../middlewares/auth.middleware";
+import { roleMiddleware } from "../middlewares/role.middleware";
 import { createUserController, getAllUsersController, getUserByIdController } from "../controllers/users.controller";
 
 const router = Router();
 
-router.post("/users", authMiddleware, roleMiddleware(["1"]), createUserController);
-router.get("/users", authMiddleware, roleMiddleware(["1"]), getAllUsersController);
-router.get("/users/:userId", authMiddleware, roleMiddleware(["1"]), getUserByIdController);
+const ADMIN_AUTH = [authMiddleware, roleMiddleware(["1"])];
+
+// Admin only
+router.post("/users", ADMIN_AUTH, createUserController);
+router.get("/users", ADMIN_AUTH, getAllUsersController);
+router.get("/users/:userId", ADMIN_AUTH, getUserByIdController);
 
 export default router;
