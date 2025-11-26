@@ -1,6 +1,6 @@
 service: ai-be-dev
 
-frameworkVersion: '4'
+frameworkVersion: "4"
 
 provider:
   name: aws
@@ -8,7 +8,8 @@ provider:
   region: us-east-1
   stage: dev
   environment:
-    AWS_BEARER_TOKEN_BEDROCK: ${env:AWS_BEARER_TOKEN_BEDROCK}
+    BEDROCK_API_KEY: ${env:BEDROCK_API_KEY}
+    BEDROCK_MODEL_ID: ${env:BEDROCK_MODEL_ID}
     DYNAMO_TABLE_USERS: ${self:provider.stage}-users
     DYNAMO_TABLE_ROLES: ${self:provider.stage}-roles
     JWT_SECRET: ${env:JWT_SECRET}
@@ -21,11 +22,15 @@ provider:
             - dynamodb:Query
             - dynamodb:GetItem
             - dynamodb:PutItem
+            - dynamodb:Scan
+            - dynamodb:DescribeTable
+            - bedrock:InvokeModel
           Resource:
             - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMO_TABLE_USERS}
             - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMO_TABLE_USERS}/index/*
             - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMO_TABLE_ROLES}
             - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMO_TABLE_ROLES}/index/*
+            - arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-haiku-20240307-v1:0
 functions:
   api:
     handler: dist/handler.handler
@@ -37,8 +42,8 @@ functions:
 package:
   individually: false
   patterns:
-    - '!node_modules/.bin/**'
-    - 'dist/**'
+    - "!node_modules/.bin/**"
+    - "dist/**"
 
 custom:
   serverless-offline:
