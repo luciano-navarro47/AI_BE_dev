@@ -44,7 +44,7 @@ export const createUserService = async (data: Payload) => {
         const newUser = {
             id: uuidv4(),
             email: data.email,
-            roleId: data.role,
+            role: data.role,
             password: hashedPassword,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),

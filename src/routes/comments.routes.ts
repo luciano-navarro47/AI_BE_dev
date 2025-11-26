@@ -8,7 +8,7 @@ import {
 } from "../controllers/comments.controller";
 
 const router = Router();
-const ADMIN_AUTH = [authMiddleware, roleMiddleware(["1"])];
+const ADMIN_AUTH = [authMiddleware, roleMiddleware(["admin"])];
 
 // Admin only
 router.get("/comments", ADMIN_AUTH, getAllCommentsController);

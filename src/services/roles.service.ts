@@ -1,14 +1,10 @@
 import { createRole, getAllRoles, getRoleById } from "../repositories/roles.repository";
 
-// Roles caché (persist if is needed in some service)
-export const rolesMap = new Map<string, string>([
-    ["1", "admin"],
-    ["2", "personal"],
-])
+const allowedRoles = new Set<string>(["admin", "personal"]);
 
-export function isRoleAllowed(roleId: string) {
-    const roleName = rolesMap.get(roleId);
-    return roleName === "admin" || roleName === "personal";
+export function isRoleAllowed(roleName: string) {
+    if(!roleName || typeof roleName !== "string") return false;
+    return allowedRoles.has(roleName.toLocaleLowerCase());
 }
 
 export const createRoleService = async (name: string) => {

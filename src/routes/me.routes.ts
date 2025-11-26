@@ -4,7 +4,7 @@ import { roleMiddleware } from "../middlewares/role.middleware";
 import { authMiddleware } from "../middlewares/auth.middleware";
 
 const router = Router();
-const USER_AUTH = [authMiddleware, roleMiddleware(["2"])];
+const USER_AUTH = [authMiddleware, roleMiddleware(["personal"])];
 
 // User only
 router.get("/me", USER_AUTH, meController);
