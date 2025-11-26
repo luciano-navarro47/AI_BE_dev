@@ -8,7 +8,7 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcryptjs";
 
-const TEST_API_URL = "https://jsonplaceholder.typicode.com/users";
+const USERS_API_URL = "https://jsonplaceholder.typicode.com/users";
 const AXIOS_TIMEOUT = 5000;
 
 type Payload = { email: string, role: string, password: string };
@@ -22,7 +22,7 @@ export const createUserService = async (data: Payload) => {
 
         let apiRes;
         try {
-            apiRes = await axios.get(TEST_API_URL, { timeout: AXIOS_TIMEOUT });
+            apiRes = await axios.get(USERS_API_URL, { timeout: AXIOS_TIMEOUT });
         } catch (err: any) {
             console.error("createUserService error:", err);
             return { ok: false, status: 500, error: "Internal server error" };
