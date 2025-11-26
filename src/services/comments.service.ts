@@ -1,14 +1,15 @@
 import axios from "axios";
-// import { BedrockRuntimeClient, ConverseCommand } from "@aws-sdk/client-bedrock-runtime";
+import { invokeConverse } from "../lib/bedrock.client";
 
 const COMMENTS_API_URL = "https://jsonplaceholder.typicode.com/comments";
 const AXIOS_TIMEOUT = 5000;
+const MODEL_ID = process.env.BEDROCK_MODEL_ID || "anthropic.claude-3-haiku-20240307-v1:0";
 
-// type BedrockAnalysisResult = {
-//     sentiment: string;
-//     emotions: string[];
-//     reasons: string[];
-// };
+type AnalysisResult = {
+    sentiment: string;
+    emotions: string[];
+    reasons: string[];
+};
 
 export const getAllCommentsService = async () => {
     try {
@@ -43,91 +44,86 @@ export const getCommentByIdService = async (commentId: string) => {
     }
 };
 
-/**
- * analyzeCommentWithBedrock
- *
- * Sends the provided text to AWS Bedrock Converse API with Anthropic Claude model
- * and expects the model to respond with a JSON payload containing:
- * { sentiment: string, emotions: string[], reasons: string[] }
- *
- * Implementation uses dynamic import of @aws-sdk/client-bedrock-runtime to avoid
- * potential named-export issues in some CommonJS setups.
- */
-// export const analyzeCommentWithBedrock = async (text: string): Promise<{ ok: boolean; status?: number; data?: BedrockAnalysisResult; error?: string }> => {
-//     if (!text || typeof text !== "string" || text.trim().length === 0) {
-//         return { ok: false, status: 400, error: "Text is required for analysis" };
-//     }
+export const analyzeCommentWithBedrock = async (text: string): Promise<{ ok: boolean; status?: number; data?: AnalysisResult; error?: string }> => {
+    if (!text || typeof text !== "string" || text.trim().length === 0) {
+        return { ok: false, status: 400, error: "Text is required" };
+    }
 
-//     try {
-//         // dynamic import to be robust with different module systems
+    // Messages: Clear instruction for the model to respond only with JSON in Spanish
+    const systemPrompt = `Eres un analizador de sentimiento y emociones en español. Responde EXCLUSIVAMENTE con un JSON válido con estas claves:
+                        - "sentiment": uno de los valores "positivo", "negativo" o "neutral".
+                        - "emotions": array de strings cortos en español (ej. "enojo", "tristeza").
+                        - "reasons": array de strings, cada elemento es una frase breve que justifique el sentimiento.
+                        No añadas explicaciones, texto adicional, ni markdown. Devuelve únicamente el JSON.`;
 
+    const userPrompt = `Analiza el siguiente comentario y devuelve el JSON en español siguiendo las reglas del sistema:\n\n"${text}"`;
 
-//         const region = process.env.AWS_REGION || "us-east-1"; // ajustar si hace falta
-//         const modelId = "anthropic.claude-3-haiku-20240307-v1:0";
+    // Build input according to the Converse spec: use `system` at root, and `messages` with only "user" roles  
+    const messages = [
+        { role: "user", content: [{ text: userPrompt }] }
+    ];
 
-//         const client = new BedrockRuntimeClient({ region });
+    const system = [{ text: systemPrompt }];
 
-//         // Build a system + user message instructing Claude to return strict JSON
-//         const systemPrompt = `Eres un analizador de sentimiento y emociones. Responde EXCLUSIVAMENTE con un JSON válido
-// con las claves: "sentiment" (valores: "positivo" | "negativo" | "neutral"),
-// "emotions" (array de strings cortos en español),
-// "reasons" (array de strings, cada elemento es una frase breve que justifica el sentimiento).
-// No agregues texto adicional fuera del JSON.`;
+    const input = {
+        modelId: MODEL_ID,
+        system,
+        messages,
+        inferenceConfig: {
+            maxTokens: 512,
+            temperature: 0.2,
+            topP: 1.0
+        },
+        requestMetadata: { source: "ai_be_dev:comment_analytics" }
+    };
 
-//         const userPrompt = `Analiza el siguiente comentario en español y devuelve el JSON solicitado:\n\n"${text}"\n\nDevuelve el JSON únicamente.`;
+    try {
+        const response = await invokeConverse(input as any); // cast because the SDK uses long types
 
-//         const messages = [
-//             { role: "system", content: [{ text: systemPrompt }] },
-//             { role: "user", content: [{ text: userPrompt }] }
-//         ];
+        // Get text content from response
+        const outputBlocks = response.output?.message?.content ?? [];
 
-//         const inferenceConfig = {
-//             maxTokens: 1024,
-//             temperature: 0.0, // determinista
-//         };
+        const textOutput = outputBlocks.map((c: any) => c.text ?? "").join("");
 
-//         const command = new ConverseCommand({
-//             modelId,
-//             messages,
-//             inferenceConfig,
-//         });
+        let parsed: any;
+        try {
+            parsed = JSON.parse(textOutput);
+        } catch (err) {
+            console.error("Failed to parse JSON from model:", err, "rawJSON:", textOutput);
+            return { ok: false, status: 502, error: "Failed to parse model JSON" };
+        }
 
-//         const response = await client.send(command);
+        // Validate shape
+        if (
+            !parsed ||
+            typeof parsed.sentiment !== "string" ||
+            !Array.isArray(parsed.emotions) ||
+            !Array.isArray(parsed.reasons)
+        ) {
+            console.error("Model returned JSON with unexpected shape:", parsed);
+            return { ok: false, status: 502, error: "Model returned JSON with unexpected shape" };
+        }
 
-//         // response.output.message.content is an array — buscar texto que contenga JSON
-//         const output = response.output?.message?.content ?? [];
-//         // concatenar posibles fragments de texto
-//         const textOutput = output.map((c: any) => c.text ?? "").join("");
+        // Normalize values to expected format (all in Spanish, lowercase)
+        const sentiment = String(parsed.sentiment).toLowerCase();
+        const emotions = parsed.emotions.map((e: any) => String(e).toLowerCase());
+        const reasons = parsed.reasons.map((r: any) => String(r).trim());
 
-//         // Intentar extraer JSON del textoOutput robustamente
-//         const firstBrace = textOutput.indexOf("{");
-//         const lastBrace = textOutput.lastIndexOf("}");
-//         if (firstBrace === -1 || lastBrace === -1) {
-//             console.error("Bedrock response didn't contain JSON:", textOutput);
-//             return { ok: false, status: 502, error: "Model did not return JSON as expected" };
-//         }
+        const result: AnalysisResult = { sentiment, emotions, reasons };
 
-//         const jsonStr = textOutput.substring(firstBrace, lastBrace + 1);
+        return { ok: true, status: 200, data: result };
 
-//         let parsed: any;
-//         try {
-//             parsed = JSON.parse(jsonStr);
-//         } catch (err) {
-//             console.error("Failed to parse model JSON:", err, "raw:", jsonStr);
-//             return { ok: false, status: 502, error: "Failed to parse model response" };
-//         }
+    } catch (err: any) {
+        // Map common SDK/Bedrock errors to appropriate status
+        const name = err?.name ?? "";
+        console.error("analyzeCommentWithBedrock error:", err);
 
-//         // basic validation of parsed shape
-//         if (!parsed || typeof parsed.sentiment !== "string" || !Array.isArray(parsed.emotions) || !Array.isArray(parsed.reasons)) {
-//             return { ok: false, status: 502, error: "Model returned JSON with unexpected shape" };
-//         }
+        if (name === "AccessDeniedException") return { ok: false, status: 403, error: "Access denied to Bedrock" };
+        if (name === "ModelNotReadyException" || name === "ServiceUnavailableException") return { ok: false, status: 503, error: "Bedrock model not ready or service unavailable" };
+        if (name === "ThrottlingException") return { ok: false, status: 429, error: "Bedrock throttling" };
+        if (name === "ModelTimeoutException") return { ok: false, status: 504, error: "Bedrock model timeout" };
 
-//         // Normalize sentiment strings to lowercase Spanish words
-//         parsed.sentiment = String(parsed.sentiment).toLowerCase();
-
-//         return { ok: true, status: 200, data: parsed as BedrockAnalysisResult };
-//     } catch (err: any) {
-//         console.error("analyzeCommentWithBedrock error:", err?.message ?? err);
-//         return { ok: false, status: 500, error: "Internal server error calling Bedrock" };
-//     }
-// };
+        // fallback
+        return { ok: false, status: 500, error: "Internal server error calling Bedrock" };
+    }
+};

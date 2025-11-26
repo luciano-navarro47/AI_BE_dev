@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import {
     getAllCommentsService,
     getCommentByIdService,
-    // analyzeCommentWithBedrock 
+    analyzeCommentWithBedrock
 } from "../services/comments.service";
 
 export const getAllCommentsController = async (req: Request, res: Response) => {
@@ -30,19 +30,27 @@ export const getCommentByIdController = async (req: Request, res: Response) => {
     }
 };
 
-// export const postCommentAnalyticsController = async (req: Request, res: Response) => {
-//     try {
-//         const { text } = req.body;
-//         if (!text || typeof text !== "string") {
-//             return res.status(400).json({ message: "text (string) is required in body" });
-//         }
+export const postCommentAnalyticsController = async (req: Request, res: Response) => {
+    try {
+        const body = (req && (req as any).body) ? (req as any).body : null;
 
-//         const result = await analyzeCommentWithBedrock(text);
-//         if (!result.ok) return res.status(result.status ?? 500).json({ message: result.error });
+        if (!body) {
+            console.warn("postCommentAnalyticsController: empty body. headers:", req.headers);
+            return res.status(400).json({ message: "Request body required. Send JSON { \"text\": \"...\" } with Content-Type: application/json" });
+        }
 
-//         return res.status(200).json(result.data);
-//     } catch (err) {
-//         console.error("postCommentAnalyticsController error:", err);
-//         return res.status(500).json({ message: "Internal server error" });
-//     }
-// };
+        const text = typeof body.text === "string" ? body.text : undefined;
+
+        if (!text || typeof text !== "string") {
+            return res.status(400).json({ message: "text (string) is required in body" });
+        }
+
+        const result = await analyzeCommentWithBedrock(text);
+        if (!result.ok) return res.status(result.status ?? 500).json({ message: result.error });
+
+        return res.status(200).json(result.data);
+    } catch (err) {
+        console.error("postCommentAnalyticsController error:", err);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
