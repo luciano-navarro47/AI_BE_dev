@@ -5,10 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "deploy": "serverless deploy",
+    "deploy": "npx serverless deploy --stage dev",
     "dev": "nodemon --watch src --exec ts-node src/local-server.ts",
-    "lint": "eslint . --ext .ts,.js",
-    "remove": "serverless remove",
     "test": "jest"
   },
   "keywords": [],

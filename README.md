@@ -1,156 +1,155 @@
 # AI_BE_dev
 
-Backend para **Reto AI**. API REST en TypeScript con Express.  
-Incluye endpoints de autenticación, tests con Jest + Supertest y despliegue con Serverless.
+Backend para el **Reto AI**.  
+API REST construida con **TypeScript**, **Express** y **DynamoDB** (AWS SDK v3).
 
 ---
 
-## Tabla de contenidos
-- [Requisitos](#requisitos)
-- [Instalación](#instalación)
-- [Comandos útiles](#comandos-útiles)
-- [Estructura del proyecto](#estructura-del-proyecto)
-- [Variables de entorno](#variables-de-entorno)
-- [Testing](#testing)
-- [Mocks en tests / Uso local](#mocks-en-tests--uso-local)
-- [Serverless (breve)](#serverless-breve)
-- [Problemas comunes / Troubleshooting](#problemas-comunes--troubleshooting)
-- [Futuras mejoras / TODO](#futuras-mejoras--todo)
+## 📌 Base URL
+
+**Producción / Dev:**  
+`https://foqbbmku8j.execute-api.us-east-1.amazonaws.com/api/v1`  
+_(Ejemplo: `https://abcd1234.execute-api.us-east-1.amazonaws.com/api/v1`)_
 
 ---
 
-## Requisitos
-- Node >= 18 (recomendado)
-- npm (o yarn)
-- (opcional) DynamoDB local si querés probar integración con AWS sin tocar la nube
-- (opcional) `serverless` CLI para deploy: `npm i -g serverless`
+## 📌 Endpoints a validar
+
+### **Auth**
+
+| Método | Endpoint  | Descripción                               |
+| ------ | --------- | ----------------------------------------- |
+| POST   | `/login`  | Logear usuario ( body: email + password ) |
+| POST   | `/logout` | Deslogear usuario ( body: token )         |
+
+### **Endpoints con role "personal"**
+
+| Método | Endpoint                     | Descripción                              |
+| ------ | ---------------------------- | ---------------------------------------- |
+| GET    | `/me`                        | Obtiene info del usuario de API externa  |
+| GET    | `/me/posts`                  | Obtiene posts del usuario                |
+| GET    | `/me/posts/:postId`          | Obtiene post del usuario                 |
+| GET    | `/me/posts/:postId/comments` | Obtiene comentarios del post del usuario |
+
+### **Endpoints con role "admin"**
+
+| Método | Endpoint               | Descripción                                     |
+| ------ | ---------------------- | ----------------------------------------------- |
+| POST   | `/roles`               | Crear role ( body: admin o personal )           |
+| GET    | `/roles`               | Lista roles disponibles                         |
+| GET    | `/roles/:roleId`       | Obtiene role                                    |
+| POST   | `/users`               | Crear usuario ( body: email + role + password ) |
+| GET    | `/users`               | Obtiene todos los usuarios                      |
+| GET    | `/users/:userId`       | Obtiene el usuario                              |
+| GET    | `/posts`               | Obtiene todos los posts                         |
+| GET    | `/posts/:postId`       | Obtiene el post                                 |
+| GET    | `/comments`            | Obtiene todos los comentarios                   |
+| GET    | `/comments/:commentId` | Obtiene el comentario                           |
+| POST   | `/comment/analytics`   | Obtiene analisis de sentimientos                |
+
+> Todos los endpoints protegidos requieren header:  
+> `Authorization: Bearer <token>`
 
 ---
 
-## Instalación
+## 🚀 Instalación
 
 ```bash
-# clonar repo
 git clone <repo-url>
 cd AI_BE_dev
-
-# instalar dependencias
 npm install
 ```
 
-## Comandos útiles
+## 🔧 Scripts principales
 
-### Desarrollo (levanta watcher para TS)
 ```bash
-npm run dev
+npm run dev      # Desarrollo con ts-node + watcher
+npm run build    # Compilar a JS
+npm test         # Tests Jest + Supertest
+npm run deploy   # Deploy a AWS
 ```
 
-### Compilar TypeScript (!! antes de deploy !!)
+## 🔐 Variables de entorno
+
+Crear un archivo .env en la raíz:
+
 ```bash
-npm run build
+AWS_REGION=us-east-1
+BEDROCK_API_KEY=replace_with_real_key
+BEDROCK_MODEL_ID=anthropic.claude-3-haiku-20240307-v1:0
+DYNAMO_TABLE_USERS=dev-users
+DYNAMO_TABLE_ROLES=dev-roles
+JWT_SECRET=your_jwt_secret_here
+JWT_EXPIRES_IN=24h
+NODE_ENV=dev
+IS_LOCAL=true  # True to local development
 ```
 
-### Ejecutar tests (Jest + ts-jest)
-```bash
-npx jest
-# o
-npm test
-``` 
+## 📁 Estructura del proyecto
 
-### Deploy con Serverless (según serverless.yml)
 ```bash
-npx serverless deploy --stage dev
+src/
+  adapters/
+  controllers/
+  lib/
+  middleware/
+  repositories/
+  routes/
+  services/
+tests/
+  auth/
 ```
 
-### Remover deployment
-```bash
-npx serverless remove --stage dev
-```
+# 🗄️ DynamoDB local (opcional)
 
-### Ejecutar DynamoDB local
-```bash
-# Modo detached (segundo plano) - recomendado
+### 📌 Base URL
+
+**Localhost:**  
+`http://localhost:3000/api/v1`
+
+### 📌 Levantar docker con dynamodb local:
+
+```
 docker run -d -p 8000:8000 amazon/dynamodb-local
 ```
 
-```bash
-# Ver contenedores corriendo
-docker ps
+## Crear tablas:
+
 ```
-
-```bash
-# Detener el contenedor
-docker stop <container_id>
-```
-
-## DynamoDB con entorno local
-
-### Crear tabla users 
-```bash
 aws dynamodb create-table \
-    --table-name dev-users \
-    --attribute-definitions AttributeName=id,AttributeType=S AttributeName=email,AttributeType=S \
-    --key-schema AttributeName=id,KeyType=HASH \
-    --global-secondary-indexes "IndexName=email-index,KeySchema=[{AttributeName=email,KeyType=HASH}],Projection={ProjectionType=ALL}" \
-    --billing-mode PAY_PER_REQUEST \
-    --endpoint-url http://localhost:8000
+ --table-name dev-users \
+ --attribute-definitions AttributeName=id,AttributeType=S AttributeName=email,AttributeType=S \
+ --key-schema AttributeName=id,KeyType=HASH \
+ --global-secondary-indexes "IndexName=email-index,KeySchema=[{AttributeName=email,KeyType=HASH}],Projection={ProjectionType=ALL}" \
+ --billing-mode PAY_PER_REQUEST \
+ --endpoint-url http://localhost:8000
 ```
 
-### Insertar un usuario de prueba
-```bash
-aws dynamodb put-item \
-    --table-name dev-users \
-    --item '{
-        "id": {"S": "1"},
-        "email": {"S": "test@example.com"},
-        "passwordHash": {"S": "$2b$10$GqzEG114O6tGw3zP8Pl1Tu41j2lfWVxHzLbNQMfYu8xi.Gv0D5wTq"},
-        "roleId": {"S": "2"}
-    }' \
-    --endpoint-url http://localhost:8000
 ```
-
-### Crear tabla roles
-```bash
 aws dynamodb create-table \
-    --table-name dev-roles \
-    --attribute-definitions AttributeName=id,AttributeType=S \
-    --key-schema AttributeName=id,KeyType=HASH \
-    --billing-mode PAY_PER_REQUEST \
-    --endpoint-url http://localhost:8000
+ --table-name dev-roles \
+ --attribute-definitions AttributeName=id,AttributeType=S \
+ --key-schema AttributeName=id,KeyType=HASH \
+ --billing-mode PAY_PER_REQUEST \
+ --endpoint-url http://localhost:8000
 ```
 
-### Insertar un rol de prueba (admin)
-```bash
+# Insertar datos iniciales:
+
+### Rol admin
+
+```
 aws dynamodb put-item \
-    --table-name dev-roles \
-    --item '{
-        "id": {"S": "1"},
-        "name": {"S": "admin"}
-    }' \
-    --endpoint-url http://localhost:8000
+ --table-name dev-roles \
+ --item '{"id":{"S":"1"},"name":{"S":"admin"}}' \
+ --endpoint-url http://localhost:8000
 ```
 
-### Insertar un rol de prueba (personal)
-```bash
+### Rol personal
+
+```
 aws dynamodb put-item \
-    --table-name dev-roles \
-    --item '{
-        "id": {"S": "2"},
-        "name": {"S": "personal"}
-    }' \
-    --endpoint-url http://localhost:8000
-```
-
-### Borrar tabla users
-```bash
-aws dynamodb delete-table \
-    --table-name dev-users \
-    --endpoint-url http://localhost:8000
-```
-
-### Borrar tabla roles
-```bash
-aws dynamodb delete-table \
-    --table-name dev-roles \
-    --endpoint-url http://localhost:8000
+ --table-name dev-roles \
+ --item '{"id":{"S":"2"},"name":{"S":"personal"}}' \
+ --endpoint-url http://localhost:8000
 ```
