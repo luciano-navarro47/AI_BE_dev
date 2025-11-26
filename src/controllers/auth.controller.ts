@@ -1,6 +1,7 @@
 
 import { Request, Response } from "express";
 import { loginService } from "../services/auth.service";
+import { addToBlacklist } from "../services/blacklist.service";
 
 export const loginController = async (req: Request, res: Response) => {
     try {
@@ -22,3 +23,20 @@ export const loginController = async (req: Request, res: Response) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 };
+
+export const logoutController = async (req: Request, res: Response) => {
+    try {
+        const { token } = req.body ?? {};
+
+        if (!token) {
+            return res.status(400).json({ message: "Token is required" });
+        }
+
+        addToBlacklist(token);
+
+        return res.status(204).send();
+    } catch (error) {
+        console.error("logoutController error:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
