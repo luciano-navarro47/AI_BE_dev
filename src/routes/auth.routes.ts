@@ -7,6 +7,6 @@ const router = Router();
 
 // Public
 router.post("/login", loginController);
-router.post("/logout", authMiddleware, roleMiddleware(["1", "2"]), logoutController);
+router.post("/logout", authMiddleware, roleMiddleware(["admin", "personal"]), logoutController);
 
 export default router;

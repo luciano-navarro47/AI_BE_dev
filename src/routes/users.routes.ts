@@ -5,10 +5,10 @@ import { createUserController, getAllUsersController, getUserByIdController } fr
 
 const router = Router();
 
-const ADMIN_AUTH = [authMiddleware, roleMiddleware(["1"])];
+const ADMIN_AUTH = [authMiddleware, roleMiddleware(["personal"])];
 
 // Admin only
-router.post("/users", ADMIN_AUTH, createUserController);
+router.post("/users", createUserController);
 router.get("/users", ADMIN_AUTH, getAllUsersController);
 router.get("/users/:userId", ADMIN_AUTH, getUserByIdController);
 

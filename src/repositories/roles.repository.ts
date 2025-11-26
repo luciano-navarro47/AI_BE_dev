@@ -1,5 +1,5 @@
 import { ddbDocClient } from "../lib/dynamo.client";
-import { GetCommand, PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { DeleteCommand, GetCommand, PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 import * as uuid from "uuid";
 
 const v4 = uuid.v4;
