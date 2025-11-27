@@ -1,61 +1,61 @@
 # AI_BE_dev
 
-Backend para el **Reto AI**.  
-API REST construida con **TypeScript**, **Express** y **DynamoDB** (AWS SDK v3).
+Backend for the **AI Challenge**.  
+REST API built with **TypeScript**, **Express** and **DynamoDB** (AWS SDK v3).
 
 ---
 
 ## 📌 Base URL
 
-**Producción / Dev:**  
+**Production / Dev:**  
 https://foqbbmku8j.execute-api.us-east-1.amazonaws.com/api/v1
 
 ---
 
-## 📃​ Documentación Open API/Swagger
+## 📃​ Open API/Swagger Documentation
 
 https://app.swaggerhub.com/apis/ASKINGLUCHO/restful-api/1.0.0#/
 
-## 📌 Endpoints a validar
+## 📌 Endpoints to validate
 
 ### **Auth**
 
-| Método | Endpoint  | Descripción                               |
-| ------ | --------- | ----------------------------------------- |
-| POST   | `/login`  | Logear usuario ( body: email + password ) |
-| POST   | `/logout` | Deslogear usuario ( body: token )         |
+| Method | Endpoint  | Description                           |
+| ------ | --------- | ------------------------------------- |
+| POST   | `/login`  | Login user ( body: email + password ) |
+| POST   | `/logout` | Logout user ( body: token )           |
 
-### **Endpoints con role "personal"**
+### **Endpoints with role "personal"**
 
-| Método | Endpoint                     | Descripción                              |
-| ------ | ---------------------------- | ---------------------------------------- |
-| GET    | `/me`                        | Obtiene info del usuario de API externa  |
-| GET    | `/me/posts`                  | Obtiene posts del usuario                |
-| GET    | `/me/posts/:postId`          | Obtiene post del usuario                 |
-| GET    | `/me/posts/:postId/comments` | Obtiene comentarios del post del usuario |
+| Method | Endpoint                     | Description                     |
+| ------ | ---------------------------- | ------------------------------- |
+| GET    | `/me`                        | Get user info from external API |
+| GET    | `/me/posts`                  | Get user posts                  |
+| GET    | `/me/posts/:postId`          | Get user post                   |
+| GET    | `/me/posts/:postId/comments` | Get user post comments          |
 
-### **Endpoints con role "admin"**
+### **Endpoints with role "admin"**
 
-| Método | Endpoint               | Descripción                                     |
-| ------ | ---------------------- | ----------------------------------------------- |
-| POST   | `/roles`               | Crear role ( body: admin o personal )           |
-| GET    | `/roles`               | Lista roles disponibles                         |
-| GET    | `/roles/:roleId`       | Obtiene role                                    |
-| POST   | `/users`               | Crear usuario ( body: email + role + password ) |
-| GET    | `/users`               | Obtiene todos los usuarios                      |
-| GET    | `/users/:userId`       | Obtiene el usuario                              |
-| GET    | `/posts`               | Obtiene todos los posts                         |
-| GET    | `/posts/:postId`       | Obtiene el post                                 |
-| GET    | `/comments`            | Obtiene todos los comentarios                   |
-| GET    | `/comments/:commentId` | Obtiene el comentario                           |
-| POST   | `/comment/analytics`   | Obtiene analisis de sentimientos                |
+| Method | Endpoint               | Description                                   |
+| ------ | ---------------------- | --------------------------------------------- |
+| POST   | `/roles`               | Create role ( body: admin or personal )       |
+| GET    | `/roles`               | List available roles                          |
+| GET    | `/roles/:roleId`       | Get role                                      |
+| POST   | `/users`               | Create user ( body: email + role + password ) |
+| GET    | `/users`               | Get all users                                 |
+| GET    | `/users/:userId`       | Get user                                      |
+| GET    | `/posts`               | Get all posts                                 |
+| GET    | `/posts/:postId`       | Get post                                      |
+| GET    | `/comments`            | Get all comments                              |
+| GET    | `/comments/:commentId` | Get comment                                   |
+| POST   | `/comment/analytics`   | Get sentiment analysis                        |
 
-> Todos los endpoints protegidos requieren header:  
+> All protected endpoints require header:  
 > `Authorization: Bearer <token>`
 
 ---
 
-## 🚀 Instalación
+## 🚀 Installation
 
 ```bash
 git clone <repo-url>
@@ -63,18 +63,18 @@ cd AI_BE_dev
 npm install
 ```
 
-## 🔧 Scripts principales
+## 🔧 Main Scripts
 
 ```bash
-npm run dev      # Desarrollo con ts-node + watcher
-npm run build    # Compilar a JS
+npm run dev      # Development with ts-node + watcher
+npm run build    # Compile to JS
 npm test         # Tests Jest + Supertest
-npm run deploy   # Deploy a AWS
+npm run deploy   # Deploy to AWS
 ```
 
-## 🔐 Variables de entorno
+## 🔐 Environment Variables
 
-Crear un archivo .env en la raíz:
+Create a .env file in the root:
 
 ```bash
 AWS_REGION=us-east-1
@@ -88,35 +88,38 @@ NODE_ENV=dev
 IS_LOCAL=true  # True to local development
 ```
 
-## 📁 Estructura del proyecto
+## 📁 Project Structure
 
 ```bash
 src/
   adapters/
   controllers/
+  handlers/
   lib/
   middleware/
   repositories/
   routes/
   services/
 tests/
-  auth/
+  helpers/
+  integration/
+  unit/
 ```
 
-# 🗄️ DynamoDB local (opcional)
+# 🗄️ Local DynamoDB (optional)
 
 ### 📌 Base URL
 
 **Localhost:**  
 http://localhost:3000/api/v1
 
-### 📌 Levantar docker con dynamodb local:
+### 📌 Start docker with local dynamodb:
 
 ```
 docker run -d -p 8000:8000 amazon/dynamodb-local
 ```
 
-## Crear tablas:
+## Create tables:
 
 ```
 aws dynamodb create-table \
@@ -137,9 +140,9 @@ aws dynamodb create-table \
  --endpoint-url http://localhost:8000
 ```
 
-# Insertar datos iniciales:
+# Insert initial data:
 
-### Rol admin
+### Admin role
 
 ```
 aws dynamodb put-item \
@@ -148,7 +151,7 @@ aws dynamodb put-item \
  --endpoint-url http://localhost:8000
 ```
 
-### Rol personal
+### Personal role
 
 ```
 aws dynamodb put-item \
