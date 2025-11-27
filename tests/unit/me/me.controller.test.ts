@@ -1,7 +1,7 @@
-import { meController } from "../../src/controllers/me.controller";
-import { getMyInfoService } from "../../src/services/me.service";
+import { meController } from "../../../src/controllers/me.controller";
+import { getMyInfoService } from "../../../src/services/me.service";
 
-jest.mock("../../src/services/me.service");
+jest.mock("../../../src/services/me.service");
 
 describe("meController - Unit Tests", () => {
   let req: any;
