@@ -1,9 +1,9 @@
 import request from "supertest";
-import app from "../../src/app";
-import { ddbDocClient } from "../../src/lib/dynamo.client";
+import app from "../../../src/app";
+import { ddbDocClient } from "../../../src/lib/dynamo.client";
 import bcrypt from "bcryptjs";
 
-jest.mock("../../src/lib/jwt", () => ({
+jest.mock("../../../src/lib/jwt", () => ({
   signJwt: jest.fn(() => "fake-jwt-token"),
 }));
 

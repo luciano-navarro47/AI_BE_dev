@@ -1,4 +1,4 @@
-jest.mock("../../src/middlewares/auth.middleware", () => {
+jest.mock("../../../src/middlewares/auth.middleware", () => {
   return {
     authMiddleware: (req: any, res: any, next: any) => {
       req.user = { userId: "1", role: "admin", email: "test@example.com" };
@@ -7,7 +7,7 @@ jest.mock("../../src/middlewares/auth.middleware", () => {
   };
 });
 
-jest.mock("../../src/middlewares/role.middleware", () => {
+jest.mock("../../../src/middlewares/role.middleware", () => {
   return {
     roleMiddleware: (_allowedRoles: string[]) => {
       return (req: any, res: any, next: any) => {
@@ -18,8 +18,8 @@ jest.mock("../../src/middlewares/role.middleware", () => {
 });
 
 import request from "supertest";
-import app from "../../src/app";
-import * as blacklistService from "../../src/services/blacklist.service";
+import app from "../../../src/app";
+import * as blacklistService from "../../../src/services/blacklist.service";
 
 describe("POST /api/v1/logout (integration)", () => {
   beforeEach(() => {
