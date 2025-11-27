@@ -12,4 +12,12 @@ export async function getPostsByUserId(userId: number) {
   return data;
 }
 
-// TO DO: implement 'https://jsonplaceholder.typicode.com/comments'
+export async function getPostById(postId: string) {
+  const { data } = await axios.get(`${BASE}/posts/${postId}`);
+  return data;
+}
+
+export async function getCommentsByPostId(postId: string) {
+  const { data } = await axios.get(`${BASE}/posts/${postId}/comments`);
+  return data;
+}
