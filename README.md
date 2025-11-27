@@ -13,6 +13,10 @@ _(Ejemplo: `https://abcd1234.execute-api.us-east-1.amazonaws.com/api/v1`)_
 
 ---
 
+## 📃​ Documentación Open API/Swagger
+
+`https://app.swaggerhub.com/apis/ASKINGLUCHO/restful-api/1.0.0#/`
+
 ## 📌 Endpoints a validar
 
 ### **Auth**
