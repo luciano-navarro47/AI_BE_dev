@@ -49,7 +49,6 @@ export const loginService = async (
       },
     };
   } catch (err) {
-    console.error("loginService error:", err);
     return { ok: false, status: 500, error: "Internal server error" };
   }
 };
