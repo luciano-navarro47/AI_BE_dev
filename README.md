@@ -8,14 +8,13 @@ API REST construida con **TypeScript**, **Express** y **DynamoDB** (AWS SDK v3).
 ## 📌 Base URL
 
 **Producción / Dev:**  
-`https://foqbbmku8j.execute-api.us-east-1.amazonaws.com/api/v1`  
-_(Ejemplo: `https://abcd1234.execute-api.us-east-1.amazonaws.com/api/v1`)_
+https://foqbbmku8j.execute-api.us-east-1.amazonaws.com/api/v1
 
 ---
 
 ## 📃​ Documentación Open API/Swagger
 
-`https://app.swaggerhub.com/apis/ASKINGLUCHO/restful-api/1.0.0#/`
+https://app.swaggerhub.com/apis/ASKINGLUCHO/restful-api/1.0.0#/
 
 ## 📌 Endpoints a validar
 
@@ -109,7 +108,7 @@ tests/
 ### 📌 Base URL
 
 **Localhost:**  
-`http://localhost:3000/api/v1`
+http://localhost:3000/api/v1
 
 ### 📌 Levantar docker con dynamodb local:
 
