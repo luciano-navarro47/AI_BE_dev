@@ -31,19 +31,116 @@ provider:
             - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMO_TABLE_ROLES}
             - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMO_TABLE_ROLES}/index/*
             - arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-haiku-20240307-v1:0
-functions:
-  api:
-    handler: dist/handler.handler
-    events:
-      - httpApi:
-          path: /{proxy+}
-          method: ANY
 
 package:
-  individually: false
+  individually: true
   patterns:
     - "!node_modules/.bin/**"
     - "dist/**"
+
+functions:
+  login:
+    handler: dist/handlers/auth/login.handler
+    events:
+      - httpApi:
+          path: /api/v1/login
+          method: post
+  logout:
+    handler: dist/handlers/auth/logout.handler
+    events:
+      - httpApi:
+          path: /api/v1/logout
+          method: post
+  getMe:
+    handler: dist/handlers/me/get-me.handler
+    events:
+      - httpApi:
+          path: /api/v1/me
+          method: get
+  getMePosts:
+    handler: dist/handlers/me/get-posts.handler
+    events:
+      - httpApi:
+          path: /api/v1/me/posts
+          method: get
+  getMePostDetail:
+    handler: dist/handlers/me/get-post-detail.handler
+    events:
+      - httpApi:
+          path: /api/v1/me/posts/{postId}
+          method: get
+  getMePostComments:
+    handler: dist/handlers/me/get-post-comments.handler
+    events:
+      - httpApi:
+          path: /api/v1/me/posts/{postId}/comments
+          method: get
+  createRole:
+    handler: dist/handlers/roles/create-role.handler
+    events:
+      - httpApi:
+          path: /api/v1/roles
+          method: post
+  getRoles:
+    handler: dist/handlers/roles/get-roles.handler
+    events:
+      - httpApi:
+          path: /api/v1/roles
+          method: get
+  getRoleById:
+    handler: dist/handlers/roles/get-role-by-id.handler
+    events:
+      - httpApi:
+          path: /api/v1/roles/{roleId}
+          method: get
+  createUser:
+    handler: dist/handlers/users/create-user.handler
+    events:
+      - httpApi:
+          path: /api/v1/users
+          method: post
+  getUsers:
+    handler: dist/handlers/users/get-users.handler
+    events:
+      - httpApi:
+          path: /api/v1/users
+          method: get
+  getUserById:
+    handler: dist/handlers/users/get-user-by-id.handler
+    events:
+      - httpApi:
+          path: /api/v1/users/{userId}
+          method: get
+  getPosts:
+    handler: dist/handlers/posts/get-posts.handler
+    events:
+      - httpApi:
+          path: /api/v1/posts
+          method: get
+  getPostById:
+    handler: dist/handlers/posts/get-post-by-id.handler
+    events:
+      - httpApi:
+          path: /api/v1/posts/{postId}
+          method: get
+  getComments:
+    handler: dist/handlers/comments/get-comments.handler
+    events:
+      - httpApi:
+          path: /api/v1/comments
+          method: get
+  getCommentById:
+    handler: dist/handlers/comments/get-comment-by-id.handler
+    events:
+      - httpApi:
+          path: /api/v1/comments/{commentId}
+          method: get
+  postAnalytics:
+    handler: dist/handlers/comments/post-analytics.handler
+    events:
+      - httpApi:
+          path: /api/v1/comment/analytics
+          method: post
 
 custom:
   serverless-offline:
